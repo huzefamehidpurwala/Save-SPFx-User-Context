@@ -1,0 +1,18 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "18.19.0",
+    "sdksVersions": {},
+    "version": "1.21.1",
+    "libraryName": "subscription-checker-spfx-library",
+    "libraryId": "92d30b3f-17df-469c-914f-2091eec67ab1",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "subscription-checker-spfx-library",
+    "solutionShortDescription": "subscription-checker-spfx-library description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "library"
+  }
+}

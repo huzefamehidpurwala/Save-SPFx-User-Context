@@ -1,0 +1,9 @@
+{
+  "id": "e0b4cb4b-3dc2-4aab-997e-ff115f84ef25",
+  "alias": "SaveUserContextLibrary",
+  "componentType": "Library",
+
+  // The "*" signifies that the version should be taken from the package.json
+  "version": "*",
+  "manifestVersion": 2
+}
