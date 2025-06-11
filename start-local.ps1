@@ -1,7 +1,7 @@
 Clear-Host
 
 # Set environment variables for local development
-$env:NODE_ENV = "local" # "production"
+# $env:NODE_ENV = "production"
 
 # Start the application
 Write-Host "Starting application..." -ForegroundColor Green
