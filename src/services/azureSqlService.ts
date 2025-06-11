@@ -1,10 +1,4 @@
-import {
-  ConnectionPool,
-  config as SqlConfig,
-  NVarChar,
-  DateTime,
-  Int,
-} from "mssql";
+import { ConnectionPool, config as SqlConfig, NVarChar, DateTime } from "mssql";
 import {
   SharePointContext,
   UserContextEntity,
