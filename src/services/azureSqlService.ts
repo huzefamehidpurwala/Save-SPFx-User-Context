@@ -45,6 +45,7 @@ const allowedCols = [
   "userPrincipalName",
   "installedDateTime",
   "lastUsedDateTime",
+  "packageType",
 ];
 
 export class AzureSqlService {
@@ -74,6 +75,7 @@ export class AzureSqlService {
         userPrincipalName NVARCHAR(256),
         installedDateTime DATETIME2,
         lastUsedDateTime DATETIME2,
+        packageType NVARCHAR(32) DEFAULT 'Trial',
         PRIMARY KEY (userEmail, productId)
       )`;
     try {
@@ -126,7 +128,8 @@ export class AzureSqlService {
           aadTenantId = @aadTenantId,
           userDisplayName = @userDisplayName,
           userPrincipalName = @userPrincipalName,
-          lastUsedDateTime = @lastUsedDateTime
+          lastUsedDateTime = @lastUsedDateTime,
+          packageType = @packageType
           WHERE userEmail = @userEmail AND productId = @productId`;
         await pool
           .request()
@@ -139,6 +142,7 @@ export class AzureSqlService {
           .input("userDisplayName", NVarChar(256), userDisplayName || "")
           .input("userPrincipalName", NVarChar(256), userPrincipalName || "")
           .input("lastUsedDateTime", DateTime, lastUsedDateTime || "")
+          .input("packageType", NVarChar(32), "Trial")
           .input("userEmail", NVarChar(256), userEmail)
           .input("aadTenantId", NVarChar(128), aadTenantId || "")
           .query(updateQuery);
@@ -146,9 +150,9 @@ export class AzureSqlService {
       } else {
         // Insert
         const insertQuery = `INSERT INTO UserContext (
-          productId, productName, portalUrl, absoluteUrl, tenantDisplayName, aadTenantId, aadUserId, userEmail, userDisplayName, userPrincipalName, installedDateTime, lastUsedDateTime
+          productId, productName, portalUrl, absoluteUrl, tenantDisplayName, aadTenantId, aadUserId, userEmail, userDisplayName, userPrincipalName, installedDateTime, lastUsedDateTime, packageType
         ) VALUES (
-          @productId, @productName, @portalUrl, @absoluteUrl, @tenantDisplayName, @aadTenantId, @aadUserId, @userEmail, @userDisplayName, @userPrincipalName, @installedDateTime, @lastUsedDateTime
+          @productId, @productName, @portalUrl, @absoluteUrl, @tenantDisplayName, @aadTenantId, @aadUserId, @userEmail, @userDisplayName, @userPrincipalName, @installedDateTime, @lastUsedDateTime, @packageType
         )`;
         await pool
           .request()
@@ -164,6 +168,7 @@ export class AzureSqlService {
           .input("userPrincipalName", NVarChar(256), userPrincipalName || "")
           .input("installedDateTime", DateTime, installedDateTime || "")
           .input("lastUsedDateTime", DateTime, lastUsedDateTime || "")
+          .input("packageType", NVarChar(32), "Trial")
           .query(insertQuery);
         logger.info(`Azure SQL: Inserted user context for ${userEmail}`);
       }

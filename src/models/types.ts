@@ -27,6 +27,9 @@ export interface SharePointContext {
   // Usage tracking
   installedDateTime?: Date;
   lastUsedDateTime?: Date;
+
+  // Package Info
+  packageType?: "Trial";
 }
 
 export interface UserContextEntity extends SharePointContext {
