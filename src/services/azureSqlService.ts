@@ -261,7 +261,6 @@ export class AzureSqlService {
         sql += ` OFFSET 0 ROWS FETCH NEXT ${queryParams.top} ROWS ONLY`;
       }
 
-      logger.info("Executing SQL query:", sql);
       const result = await pool.request().query(sql);
       return result.recordset as UserContextEntity[];
     } catch (error) {
