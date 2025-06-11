@@ -1,5 +1,4 @@
 import winston from "winston";
-import path from "path";
 import { isLocalEnv } from "../config/env";
 
 const logFormat = winston.format.combine(
@@ -10,15 +9,6 @@ const logFormat = winston.format.combine(
 export const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || "info",
   format: logFormat,
-  transports: [
-    new winston.transports.File({
-      filename: path.join(process.env.LOG_FILE_PATH || "logs/app.log"),
-      level: "error",
-    }),
-    new winston.transports.File({
-      filename: path.join(process.env.LOG_FILE_PATH || "logs/app.log"),
-    }),
-  ],
 });
 
 if (isLocalEnv) {
