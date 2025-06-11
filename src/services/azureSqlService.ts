@@ -36,6 +36,7 @@ const allowedCols = [
   "productId",
   "productName",
   "portalUrl",
+  "absoluteUrl",
   "tenantDisplayName",
   "aadTenantId",
   "aadUserId",
@@ -65,6 +66,7 @@ export class AzureSqlService {
         productId NVARCHAR(128) NOT NULL,
         productName NVARCHAR(128),
         portalUrl NVARCHAR(512),
+        absoluteUrl NVARCHAR(512),
         tenantDisplayName NVARCHAR(256),
         aadTenantId NVARCHAR(128),
         aadUserId NVARCHAR(128),
@@ -91,6 +93,7 @@ export class AzureSqlService {
       productId,
       productName,
       portalUrl,
+      absoluteUrl,
       tenantDisplayName,
       aadTenantId,
       aadUserId,
@@ -119,6 +122,7 @@ export class AzureSqlService {
         const updateQuery = `UPDATE UserContext SET
           productName = @productName,
           portalUrl = @portalUrl,
+          absoluteUrl = @absoluteUrl,
           tenantDisplayName = @tenantDisplayName,
           aadUserId = @aadUserId,
           aadTenantId = @aadTenantId,
@@ -132,6 +136,7 @@ export class AzureSqlService {
           .input("productId", NVarChar(128), productId || productName)
           .input("productName", NVarChar(128), productName || "")
           .input("portalUrl", NVarChar(512), portalUrl || "")
+          .input("absoluteUrl", NVarChar(512), absoluteUrl || "")
           .input("tenantDisplayName", NVarChar(256), tenantDisplayName || "")
           .input("aadUserId", NVarChar(128), aadUserId || "")
           .input("userDisplayName", NVarChar(256), userDisplayName || "")
@@ -145,15 +150,16 @@ export class AzureSqlService {
       } else {
         // Insert
         const insertQuery = `INSERT INTO UserContext (
-          productId, productName, portalUrl, tenantDisplayName, aadTenantId, aadUserId, userEmail, userDisplayName, userPrincipalName, installedDateTime, lastUsedDateTime, placesInstalledCount
+          productId, productName, portalUrl, absoluteUrl, tenantDisplayName, aadTenantId, aadUserId, userEmail, userDisplayName, userPrincipalName, installedDateTime, lastUsedDateTime, placesInstalledCount
         ) VALUES (
-          @productId, @productName, @portalUrl, @tenantDisplayName, @aadTenantId, @aadUserId, @userEmail, @userDisplayName, @userPrincipalName, @installedDateTime, @lastUsedDateTime, @placesInstalledCount
+          @productId, @productName, @portalUrl, @absoluteUrl, @tenantDisplayName, @aadTenantId, @aadUserId, @userEmail, @userDisplayName, @userPrincipalName, @installedDateTime, @lastUsedDateTime, @placesInstalledCount
         )`;
         await pool
           .request()
           .input("productId", NVarChar(128), productId || productName)
           .input("productName", NVarChar(128), productName || "")
           .input("portalUrl", NVarChar(512), portalUrl || "")
+          .input("absoluteUrl", NVarChar(512), absoluteUrl || "")
           .input("tenantDisplayName", NVarChar(256), tenantDisplayName || "")
           .input("aadTenantId", NVarChar(128), aadTenantId || "")
           .input("aadUserId", NVarChar(128), aadUserId || "")

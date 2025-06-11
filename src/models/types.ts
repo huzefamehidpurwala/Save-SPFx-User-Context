@@ -12,6 +12,7 @@ export interface SharePointContext {
 
   // Site info
   portalUrl?: string;
+  absoluteUrl?: string;
 
   // Tenant info
   tenantDisplayName?: string;

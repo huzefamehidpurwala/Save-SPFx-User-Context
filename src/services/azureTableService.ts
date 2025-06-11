@@ -59,6 +59,7 @@ export class AzureTableService {
       productId: context.productId,
       productName: context.productName,
       portalUrl: context.portalUrl,
+      absoluteUrl: context.absoluteUrl,
       tenantDisplayName: context.tenantDisplayName,
       aadTenantId: context.aadTenantId,
       aadUserId: context.aadUserId,
