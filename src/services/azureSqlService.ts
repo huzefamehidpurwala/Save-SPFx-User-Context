@@ -45,7 +45,6 @@ const allowedCols = [
   "userPrincipalName",
   "installedDateTime",
   "lastUsedDateTime",
-  "placesInstalledCount",
 ];
 
 export class AzureSqlService {
@@ -75,7 +74,6 @@ export class AzureSqlService {
         userPrincipalName NVARCHAR(256),
         installedDateTime DATETIME2,
         lastUsedDateTime DATETIME2,
-        placesInstalledCount INT,
         PRIMARY KEY (userEmail, productId)
       )`;
     try {
@@ -117,14 +115,6 @@ export class AzureSqlService {
 
         installedDateTime = recordset.installedDateTime || now;
         lastUsedDateTime = now;
-        let placesInstalledCount = parseInt(
-          recordset?.placesInstalledCount || 1
-        );
-
-        // Increment placesInstalledCount if installed at new absoluteUrl
-        if (recordset.absoluteUrl !== absoluteUrl) {
-          placesInstalledCount += 1;
-        }
 
         // Update
         const updateQuery = `UPDATE UserContext SET
@@ -136,8 +126,7 @@ export class AzureSqlService {
           aadTenantId = @aadTenantId,
           userDisplayName = @userDisplayName,
           userPrincipalName = @userPrincipalName,
-          lastUsedDateTime = @lastUsedDateTime,
-          placesInstalledCount = @placesInstalledCount
+          lastUsedDateTime = @lastUsedDateTime
           WHERE userEmail = @userEmail AND productId = @productId`;
         await pool
           .request()
@@ -150,7 +139,6 @@ export class AzureSqlService {
           .input("userDisplayName", NVarChar(256), userDisplayName || "")
           .input("userPrincipalName", NVarChar(256), userPrincipalName || "")
           .input("lastUsedDateTime", DateTime, lastUsedDateTime || "")
-          .input("placesInstalledCount", Int, placesInstalledCount)
           .input("userEmail", NVarChar(256), userEmail)
           .input("aadTenantId", NVarChar(128), aadTenantId || "")
           .query(updateQuery);
@@ -158,9 +146,9 @@ export class AzureSqlService {
       } else {
         // Insert
         const insertQuery = `INSERT INTO UserContext (
-          productId, productName, portalUrl, absoluteUrl, tenantDisplayName, aadTenantId, aadUserId, userEmail, userDisplayName, userPrincipalName, installedDateTime, lastUsedDateTime, placesInstalledCount
+          productId, productName, portalUrl, absoluteUrl, tenantDisplayName, aadTenantId, aadUserId, userEmail, userDisplayName, userPrincipalName, installedDateTime, lastUsedDateTime
         ) VALUES (
-          @productId, @productName, @portalUrl, @absoluteUrl, @tenantDisplayName, @aadTenantId, @aadUserId, @userEmail, @userDisplayName, @userPrincipalName, @installedDateTime, @lastUsedDateTime, @placesInstalledCount
+          @productId, @productName, @portalUrl, @absoluteUrl, @tenantDisplayName, @aadTenantId, @aadUserId, @userEmail, @userDisplayName, @userPrincipalName, @installedDateTime, @lastUsedDateTime
         )`;
         await pool
           .request()
@@ -176,7 +164,6 @@ export class AzureSqlService {
           .input("userPrincipalName", NVarChar(256), userPrincipalName || "")
           .input("installedDateTime", DateTime, installedDateTime || "")
           .input("lastUsedDateTime", DateTime, lastUsedDateTime || "")
-          .input("placesInstalledCount", Int, 1)
           .query(insertQuery);
         logger.info(`Azure SQL: Inserted user context for ${userEmail}`);
       }
@@ -211,7 +198,7 @@ export class AzureSqlService {
       }
       // Filter (raw SQL, but only allow safe columns)
       if (queryParams?.filter) {
-        // Very basic filter parser: e.g. "aadTenantId = 'abc' AND placesInstalledCount > 1"
+        // Very basic filter parser: e.g. "aadTenantId = 'abc' AND "
         // Only allow if all columns in filter are allowed
         const filterSafe = queryParams.filter
           .split(/\s+(AND|OR)\s+/i)

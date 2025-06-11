@@ -27,7 +27,6 @@ export interface SharePointContext {
   // Usage tracking
   installedDateTime?: Date;
   lastUsedDateTime?: Date;
-  placesInstalledCount?: number;
 }
 
 export interface UserContextEntity extends SharePointContext {
