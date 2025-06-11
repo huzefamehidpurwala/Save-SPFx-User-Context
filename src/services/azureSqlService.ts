@@ -33,6 +33,7 @@ const sqlConfig: SqlConfig = {
 
 // Only allow select, filter, orderby on allowed columns
 const allowedCols = [
+  "productId",
   "productName",
   "portalUrl",
   "tenantDisplayName",
@@ -61,10 +62,11 @@ export class AzureSqlService {
     const createTableQuery = `
       IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='UserContext' and xtype='U')
       CREATE TABLE UserContext (
+        productId NVARCHAR(128) NOT NULL,
         productName NVARCHAR(128),
         portalUrl NVARCHAR(512),
         tenantDisplayName NVARCHAR(256),
-        aadTenantId NVARCHAR(128) NOT NULL,
+        aadTenantId NVARCHAR(128),
         aadUserId NVARCHAR(128),
         userEmail NVARCHAR(256) NOT NULL,
         userDisplayName NVARCHAR(256),
@@ -72,7 +74,7 @@ export class AzureSqlService {
         installedDateTime DATETIME2,
         lastUsedDateTime DATETIME2,
         placesInstalledCount INT,
-        PRIMARY KEY (userEmail, aadTenantId)
+        PRIMARY KEY (userEmail, productId)
       )`;
     try {
       await pool.request().query(createTableQuery);
@@ -86,6 +88,7 @@ export class AzureSqlService {
   async upsertUserContext(context: SharePointContext): Promise<void> {
     const pool = await this.getPool();
     const {
+      productId,
       productName,
       portalUrl,
       tenantDisplayName,
@@ -97,11 +100,11 @@ export class AzureSqlService {
     } = context;
     try {
       // Check for existing entry
-      const checkQuery = `SELECT * FROM UserContext WHERE userEmail = @userEmail AND aadTenantId = @aadTenantId`;
+      const checkQuery = `SELECT * FROM UserContext WHERE userEmail = @userEmail AND productId = @productId`;
       const checkResult = await pool
         .request()
         .input("userEmail", NVarChar(256), userEmail)
-        .input("aadTenantId", NVarChar(128), aadTenantId || portalUrl)
+        .input("productId", NVarChar(128), productId || productName)
         .query(checkQuery);
       const now = new Date();
       let installedDateTime = now;
@@ -118,13 +121,15 @@ export class AzureSqlService {
           portalUrl = @portalUrl,
           tenantDisplayName = @tenantDisplayName,
           aadUserId = @aadUserId,
+          aadTenantId = @aadTenantId,
           userDisplayName = @userDisplayName,
           userPrincipalName = @userPrincipalName,
           lastUsedDateTime = @lastUsedDateTime,
           placesInstalledCount = @placesInstalledCount
-          WHERE userEmail = @userEmail AND aadTenantId = @aadTenantId`;
+          WHERE userEmail = @userEmail AND productId = @productId`;
         await pool
           .request()
+          .input("productId", NVarChar(128), productId || productName)
           .input("productName", NVarChar(128), productName || "")
           .input("portalUrl", NVarChar(512), portalUrl || "")
           .input("tenantDisplayName", NVarChar(256), tenantDisplayName || "")
@@ -134,22 +139,23 @@ export class AzureSqlService {
           .input("lastUsedDateTime", DateTime, lastUsedDateTime || "")
           .input("placesInstalledCount", Int, newPlacesInstalledCount ?? 1)
           .input("userEmail", NVarChar(256), userEmail)
-          .input("aadTenantId", NVarChar(128), aadTenantId || portalUrl)
+          .input("aadTenantId", NVarChar(128), aadTenantId || "")
           .query(updateQuery);
         logger.info(`Azure SQL: Updated user context for ${userEmail}`);
       } else {
         // Insert
         const insertQuery = `INSERT INTO UserContext (
-          productName, portalUrl, tenantDisplayName, aadTenantId, aadUserId, userEmail, userDisplayName, userPrincipalName, installedDateTime, lastUsedDateTime, placesInstalledCount
+          productId, productName, portalUrl, tenantDisplayName, aadTenantId, aadUserId, userEmail, userDisplayName, userPrincipalName, installedDateTime, lastUsedDateTime, placesInstalledCount
         ) VALUES (
-          @productName, @portalUrl, @tenantDisplayName, @aadTenantId, @aadUserId, @userEmail, @userDisplayName, @userPrincipalName, @installedDateTime, @lastUsedDateTime, @placesInstalledCount
+          @productId, @productName, @portalUrl, @tenantDisplayName, @aadTenantId, @aadUserId, @userEmail, @userDisplayName, @userPrincipalName, @installedDateTime, @lastUsedDateTime, @placesInstalledCount
         )`;
         await pool
           .request()
+          .input("productId", NVarChar(128), productId || productName)
           .input("productName", NVarChar(128), productName || "")
           .input("portalUrl", NVarChar(512), portalUrl || "")
           .input("tenantDisplayName", NVarChar(256), tenantDisplayName || "")
-          .input("aadTenantId", NVarChar(128), aadTenantId || portalUrl)
+          .input("aadTenantId", NVarChar(128), aadTenantId || "")
           .input("aadUserId", NVarChar(128), aadUserId || "")
           .input("userEmail", NVarChar(256), userEmail)
           .input("userDisplayName", NVarChar(256), userDisplayName || "")

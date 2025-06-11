@@ -7,6 +7,7 @@ export enum ErrorType {
 
 export interface SharePointContext {
   // Product info
+  productId: string;
   productName: string;
 
   // Site info

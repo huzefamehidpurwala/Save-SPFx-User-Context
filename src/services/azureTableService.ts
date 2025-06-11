@@ -33,7 +33,7 @@ export class AzureTableService {
   }
 
   async upsertUserContext(context: SharePointContext): Promise<void> {
-    const partitionKey = context.aadTenantId;
+    const partitionKey = context.productId;
     const rowKey = context.userEmail?.toLowerCase();
     let entity: UserContextEntity | undefined;
     try {
@@ -56,6 +56,7 @@ export class AzureTableService {
     const upsertEntity: UserContextEntity = {
       partitionKey: partitionKey!,
       rowKey: rowKey!,
+      productId: context.productId,
       productName: context.productName,
       portalUrl: context.portalUrl,
       tenantDisplayName: context.tenantDisplayName,
