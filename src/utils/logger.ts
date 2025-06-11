@@ -1,5 +1,6 @@
 import winston from "winston";
 import path from "path";
+import { isLocalEnv } from "../config/env";
 
 const logFormat = winston.format.combine(
   winston.format.timestamp(),
@@ -20,7 +21,7 @@ export const logger = winston.createLogger({
   ],
 });
 
-if (process.env.NODE_ENV !== "production") {
+if (isLocalEnv) {
   logger.add(
     new winston.transports.Console({
       format: winston.format.combine(
