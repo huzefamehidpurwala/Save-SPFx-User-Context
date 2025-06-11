@@ -113,10 +113,18 @@ export class AzureSqlService {
       let installedDateTime = now;
       let lastUsedDateTime = now;
       if (checkResult.recordset.length > 0) {
-        installedDateTime = checkResult.recordset[0].installedDateTime || now;
+        const recordset = checkResult.recordset[0];
+
+        installedDateTime = recordset.installedDateTime || now;
         lastUsedDateTime = now;
-        const newPlacesInstalledCount =
-          parseInt(checkResult.recordset[0]?.placesInstalledCount ?? 0) + 1;
+        let placesInstalledCount = parseInt(
+          recordset?.placesInstalledCount || 1
+        );
+
+        // Increment placesInstalledCount if installed at new absoluteUrl
+        if (recordset.absoluteUrl !== absoluteUrl) {
+          placesInstalledCount += 1;
+        }
 
         // Update
         const updateQuery = `UPDATE UserContext SET
@@ -142,7 +150,7 @@ export class AzureSqlService {
           .input("userDisplayName", NVarChar(256), userDisplayName || "")
           .input("userPrincipalName", NVarChar(256), userPrincipalName || "")
           .input("lastUsedDateTime", DateTime, lastUsedDateTime || "")
-          .input("placesInstalledCount", Int, newPlacesInstalledCount ?? 1)
+          .input("placesInstalledCount", Int, placesInstalledCount)
           .input("userEmail", NVarChar(256), userEmail)
           .input("aadTenantId", NVarChar(128), aadTenantId || "")
           .query(updateQuery);
