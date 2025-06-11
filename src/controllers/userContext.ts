@@ -8,7 +8,7 @@ const sqlService = new AzureSqlService();
 export class UserContextController {
   static async createOrUpdate(req: Request, res: Response): Promise<void> {
     // Respond immediately as per PRD
-    res.status(200).json({ message: "Request accepted for processing" });
+    res.status(200).json({}); // message: "Request accepted for processing"
 
     const context: SharePointContext = req.body;
 
@@ -29,11 +29,16 @@ export class UserContextController {
       const { select, top, filter, orderBy, search } = req.query;
       const queryParams: UserContextQueryParams = {};
       if (typeof select === "string") queryParams.select = select;
-      if (typeof top === "string" && !isNaN(Number(top))) queryParams.top = Number(top);
+      if (typeof top === "string" && !isNaN(Number(top)))
+        queryParams.top = Number(top);
       if (typeof filter === "string") queryParams.filter = filter;
       if (typeof orderBy === "string") queryParams.orderBy = orderBy;
       if (typeof search === "string") queryParams.search = search;
-      const contexts = await sqlService.getAllUserContexts(Object.keys(queryParams).length ? queryParams : undefined);
+
+      const contexts = await sqlService.getAllUserContexts(
+        Object.keys(queryParams).length ? queryParams : undefined
+      );
+
       res.status(200).json(contexts);
     } catch (error) {
       logger.error("Error retrieving user contexts:", error);
