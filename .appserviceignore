@@ -35,3 +35,4 @@ logs
 subscription-checker-spfx-library/
 start-local.ps1
 dev-deployment-command.ps1
+web.config
