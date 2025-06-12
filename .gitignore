@@ -41,3 +41,4 @@ obj
 .azurite
 
 config/allowedAdmins.json
+.deployment/deployment.zip
