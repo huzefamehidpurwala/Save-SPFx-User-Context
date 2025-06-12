@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node dist/app.js",
+    "start": "node dist/app.js",
+    "local": "npm run build && node dist/app.js",
     "dev": "nodemon --watch 'src/**/*.ts' --exec ts-node src/app.ts",
     "azurite": "azurite --silent --location .azurite --debug .azurite/debug.log",
     "build": "tsc",

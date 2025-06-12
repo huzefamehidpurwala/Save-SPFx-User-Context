@@ -5,7 +5,7 @@ Clear-Host
 
 # Start the application
 Write-Host "Starting application..." -ForegroundColor Green
-npm run start
+npm run local
 
 # Cleanup when the script is interrupted
 finally {
