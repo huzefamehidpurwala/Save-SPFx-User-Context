@@ -114,31 +114,11 @@ export class AzureSqlService {
 
         // Update
         const updateQuery = `UPDATE UserContext SET
-          productName = @productName,
-          portalUrl = @portalUrl,
-          absoluteUrl = @absoluteUrl,
-          tenantDisplayName = @tenantDisplayName,
-          aadUserId = @aadUserId,
-          aadTenantId = @aadTenantId,
-          userDisplayName = @userDisplayName,
-          userPrincipalName = @userPrincipalName,
           lastUsedDateTime = @lastUsedDateTime,
-          packageType = @packageType
           WHERE userEmail = @userEmail AND productId = @productId`;
         await pool
           .request()
-          .input("productId", NVarChar(128), productId || productName)
-          .input("productName", NVarChar(128), productName || "")
-          .input("portalUrl", NVarChar(512), portalUrl || "")
-          .input("absoluteUrl", NVarChar(512), absoluteUrl || "")
-          .input("tenantDisplayName", NVarChar(256), tenantDisplayName || "")
-          .input("aadUserId", NVarChar(128), aadUserId || "")
-          .input("userDisplayName", NVarChar(256), userDisplayName || "")
-          .input("userPrincipalName", NVarChar(256), userPrincipalName || "")
           .input("lastUsedDateTime", DateTime, lastUsedDateTime || "")
-          .input("packageType", NVarChar(32), "Trial")
-          .input("userEmail", NVarChar(256), userEmail)
-          .input("aadTenantId", NVarChar(128), aadTenantId || "")
           .query(updateQuery);
         logger.info(`Azure SQL: Updated user context for ${userEmail}`);
       } else {
