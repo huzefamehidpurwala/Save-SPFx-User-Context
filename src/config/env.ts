@@ -13,6 +13,7 @@ export const AZURE_SQL_USER = process.env.AZURE_SQL_USER || "";
 export const AZURE_SQL_PASSWORD = process.env.AZURE_SQL_PASSWORD || "";
 export const AZURE_SQL_SERVER = process.env.AZURE_SQL_SERVER || "";
 export const AZURE_SQL_DATABASE = process.env.AZURE_SQL_DATABASE || "";
+export const AZURE_SQL_TABLENAME = process.env.AZURE_SQL_TABLENAME || "";
 export const AZURE_SQL_PORT = process.env.AZURE_SQL_PORT
   ? parseInt(process.env.AZURE_SQL_PORT)
   : 1433;

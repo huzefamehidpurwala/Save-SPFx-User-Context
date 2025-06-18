@@ -11,6 +11,7 @@ import {
   AZURE_SQL_SERVER,
   AZURE_SQL_DATABASE,
   AZURE_SQL_PORT,
+  AZURE_SQL_TABLENAME,
 } from "../config/env";
 
 const sqlConfig: SqlConfig = {
@@ -55,8 +56,8 @@ export class AzureSqlService {
   async ensureTableExists(): Promise<void> {
     const pool = await this.getPool();
     const createTableQuery = `
-      IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='UserContext' and xtype='U')
-      CREATE TABLE UserContext (
+      IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='${AZURE_SQL_TABLENAME}' and xtype='U')
+      CREATE TABLE ${AZURE_SQL_TABLENAME} (
         productId NVARCHAR(128) NOT NULL,
         productName NVARCHAR(128),
         portalUrl NVARCHAR(512),
@@ -97,7 +98,7 @@ export class AzureSqlService {
     } = context;
     try {
       // Check for existing entry
-      const checkQuery = `SELECT * FROM UserContext WHERE userEmail = @userEmail AND productId = @productId`;
+      const checkQuery = `SELECT * FROM ${AZURE_SQL_TABLENAME} WHERE userEmail = @userEmail AND productId = @productId`;
       const checkResult = await pool
         .request()
         .input("userEmail", NVarChar(256), userEmail)
@@ -113,7 +114,7 @@ export class AzureSqlService {
         lastUsedDateTime = now;
 
         // Update
-        const updateQuery = `UPDATE UserContext SET
+        const updateQuery = `UPDATE ${AZURE_SQL_TABLENAME} SET
           lastUsedDateTime = @lastUsedDateTime,
           WHERE userEmail = @userEmail AND productId = @productId`;
         await pool
@@ -123,7 +124,7 @@ export class AzureSqlService {
         logger.info(`Azure SQL: Updated user context for ${userEmail}`);
       } else {
         // Insert
-        const insertQuery = `INSERT INTO UserContext (
+        const insertQuery = `INSERT INTO ${AZURE_SQL_TABLENAME} (
           productId, productName, portalUrl, absoluteUrl, tenantDisplayName, aadTenantId, aadUserId, userEmail, userDisplayName, userPrincipalName, installedDateTime, lastUsedDateTime, packageType
         ) VALUES (
           @productId, @productName, @portalUrl, @absoluteUrl, @tenantDisplayName, @aadTenantId, @aadUserId, @userEmail, @userDisplayName, @userPrincipalName, @installedDateTime, @lastUsedDateTime, @packageType
@@ -166,7 +167,7 @@ export class AzureSqlService {
           .filter((c) => allowedCols.includes(c));
         if (cols.length > 0) select = cols.join(", ");
       }
-      let sql = `SELECT ${select} FROM UserContext`;
+      let sql = `SELECT ${select} FROM ${AZURE_SQL_TABLENAME}`;
       const where: string[] = [];
       // Search (simple LIKE on userEmail, userDisplayName, userPrincipalName)
       if (queryParams?.search) {
