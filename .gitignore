@@ -42,3 +42,5 @@ obj
 
 config/allowedAdmins.json
 .deployment/deployment.zip
+.psspl
+.psspl/*
