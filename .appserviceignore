@@ -34,6 +34,7 @@ teamsapp.*.yml
 logs
 subscription-checker-spfx-library/
 start-local.ps1
-dev-deployment-command.ps1
+*.ps1
 .psspl
 .psspl/*
+web.config
