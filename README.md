@@ -31,6 +31,11 @@ interface ISendCtx {
   userPrincipalName: string | undefined;
 }
 
+/**
+ *
+ * @param ctx WebPartContext from SPFx
+ * @param prdName (optional) Product name to be sent, defaults to the web part alias
+ */
 const sendContext = async (
   ctx: WebPartContext,
   prdName?: string
